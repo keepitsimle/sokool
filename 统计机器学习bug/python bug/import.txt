@@ -39,4 +39,23 @@
 
 5.python 的None
 	None: 空对象 没有类型 与有类型的0等都不一样.使用isinstance(a,int) 判断a 是否是int类型
-	 
+
+6. python 的zip 
+	zip 是python的内建函数,接受一系列的可迭代的值作为参数, 将对应的元素打包成元组(tuple),返回tuples组成的列表,利用*将zipped list 解压.
+	a = [1,2,3,4]
+	b = ['a','b','c','d']
+	list(zip(a,b))
+	Out[17]: [(1, 'a'), (2, 'b'), (3, 'c'), (4, 'd')]
+	c = zip(a,b)
+	list(zip(zip(*c)))
+	Out[19]: [((1, 2, 3, 4),), (('a', 'b', 'c', 'd'),)]
+
+8. sorted()函数
+	可以将list排序,默认是ascending升序 使用key来决定排序的是哪一个.
+	 sorted_dict = sorted(lst, key=lambda x: x[1],reverse = False) # 按照数字求最大的 ascending
+
+
+9. set的遍历的问题:
+	weekdays = ([f,t,w,t,f,s,s])
+ 	for i in weekdays:
+		print(i)   #注意是无序的哦
