@@ -59,3 +59,18 @@
 	weekdays = ([f,t,w,t,f,s,s])
  	for i in weekdays:
 		print(i)   #注意是无序的哦
+
+10. dict的操作:
+	1.dict的定义:
+		可变的容器类型,可以放任何对象
+		使用键:值表示一个条目,使用,分割.
+		整个在{}里面.
+	2.dict的添加和删除
+		dict = {'Name': 'Zara', 'Age': 7, 'Class': 'First'};
+		dict['Age'] = 8
+
+		del dict['Name'], 删除后不再存在
+	3.dict的访问
+		不允许一个键出现两次,键是不可变的.
+
+11. append() 是在list列表中使用的函数.
