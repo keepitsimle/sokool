@@ -1,0 +1,35 @@
+def cal_shonnan_entropy(dataSet):
+    print("dataSet",dataSet)
+    lens = len(dataSet)
+    s = {}
+    for items in dataSet:
+        print("items", items);
+        feature = items[-1]
+        print("feature_s.keys()",feature,s.keys());
+        print("__typeof",type(s.keys()),type(feature));
+        if feature not in s.keys():
+            s[feature] = 1
+        else:
+            s[feature]+=1
+        print("sss", s)
+    entropy = 0
+    for item in s:
+        pro = s[item]/lens
+        entropy += pro*log(pro,2)
+    return entropy
+#
+# dataSet  = [[1, 1, 'yes'], [1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']];
+# dataSet =    [[1, 1, 'yes'], [1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']];
+dataSet=[[[1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']], [[1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']]]
+Traceback (most recent call last):
+dataSet [[[1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']], [[1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']]]
+  File "C:/Users/easy_/Desktop/Pro/hello/tree.py", line 36, in <module>
+    cal_shonnan_entropy(dataSet)
+  File "C:/Users/easy_/Desktop/Pro/hello/tree.py", line 20, in cal_shonnan_entropy
+    if feature not in s.keys():
+TypeError: unhashable type: 'list'
+items [[1, 1, 'yes'], [1, 0, 'no'], [0, 1, 'no'], [0, 1, 'no']]
+feature_s.keys() [0, 1, 'no'] dict_keys([])
+__typeof <class 'dict_keys'> <class 'list'>
+
+Process finished with exit code 1
