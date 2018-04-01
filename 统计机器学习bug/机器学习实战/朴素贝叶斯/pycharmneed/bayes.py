@@ -144,3 +144,117 @@ def bag_of_words_2_vec_mn(vocab_list,input_set):
         if word in vacab_list:
             return_vec[vacab_list.index(word)] +=1
     return return_vec
+
+
+def text_parse(text):
+    import re
+    list_tokens = re.split(r'\W*',text) 
+    return [tok.lower() for tok in list_tokens if len(tok)>2]
+
+# text = r'Never lie to someone who trust you, Never trust someone who lies to you.'
+# print(text_parse(text))
+
+email_path = 'F:\\BaiduNetdiskDownload\\机器学习\\机器学习实战\\machinelearninginaction\\machinelearninginaction\\Ch04\\email'
+
+def spam_test():
+
+    doc_list = [];
+    class_list = [];
+    full_text =[];
+
+    ham_path = email_path + '\\ham\\';
+
+
+    spam_path = email_path + '\\spam\\';
+
+
+    for i in range(1,26):
+        word_list = text_parse(open(ham_path+ '%d.txt'%i,encoding='utf-8').read())
+        doc_list.append(word_list)
+        class_list.append(1)
+        full_text.append(word_list)
+
+        word_list = text_parse(open(spam_path + '%d.txt'%i,encoding='utf-8').read())
+        doc_list.append(word_list)
+        class_list.append(0)
+        full_text.append(word_list)
+
+    vacab_list = create_vacab_list(doc_list)
+    train_set = list(range(50))
+    test_set = []
+
+    for i in range(10):   #构建随机的训练集
+        rand_index = int(random.uniform(0,len(train_set)))
+        test_set.append(train_set[rand_index])
+        del(train_set[rand_index])
+
+    train_mat = []; train_class = []
+
+    for doc_index in train_set:
+        train_mat.append(set_of_words2_vec(vacab_list,doc_list[doc_index]))
+        train_class.append(class_list[doc_index])
+
+    p0_vec,p1_vec,p_spam = train_navie_bayes(array(train_mat),array(train_class))
+
+
+    error_count = 0
+
+
+    for doc_index in test_set:
+        word_vector = set_of_words2_vec(vacab_list,doc_list[doc_index])
+        if classify_bayes(array(word_vector),p0_vec,p1_vec,p_spam) != class_list[doc_index]:
+            error_count +=1
+    print('the error rate is ',float(error_count)/len(test_set))
+
+# spam_test()
+
+
+test_set_path = r'F:\BaiduNetdiskDownload\机器学习\机器学习实战\machinelearninginaction\machinelearninginaction\Ch05\testSet.txt'
+
+def load_dataset():
+    data_mat = []
+    label_mat =[]
+
+    file_open = open(test_set_path)
+    for line in file_open.readlines():
+        line_data = line.strip().split('\t')
+
+        data_mat.append([float(line_data[0]),float(line_data[0])])
+
+        label_mat.append([int(line_data[2])])
+
+    return data_mat,label_mat
+
+print(load_dataset())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
