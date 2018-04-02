@@ -219,13 +219,64 @@ def load_dataset():
     for line in file_open.readlines():
         line_data = line.strip().split('\t')
 
-        data_mat.append([float(line_data[0]),float(line_data[0])])
+        data_mat.append([1.0,float(line_data[0]),float(line_data[0])])
 
         label_mat.append([int(line_data[2])])
 
     return data_mat,label_mat
 
-print(load_dataset())
+# print(load_dataset())
+
+
+def sigmod_func(inX):
+    return 1.0/(1+exp(-inX))
+
+
+'''
+    data_mat
+        是100*3 矩阵
+            每一行标识一个特定的样本
+            每一列都是一个特定的feature
+                X0  =  1
+                X1  
+                X2
+    class_label
+        标签向量 需要转换成列向量 
+'''
+def gradientAscent(data_mat,class_label):
+    class_label_column = array(class_label).transpose();
+    data_mat = mat(data_mat)
+    class_label = mat(class_label)
+    m = shape(data_mat)[0]; # m行 标识m个样本
+    n = shape(data_mat[0])[1]; # n 列 标识n列 每个样本的特征数
+
+    max_cycle = 10;
+    learning_rate = 0.01;
+
+    error_upbound = 0.001;
+    error_iter = 100;
+
+    w1 = mat(array([1]*n));
+    w = w1.transpose();
+    # print(w)
+
+    for i in range(max_cycle):
+        err_sum = 0.0
+        for index in range(m):
+            product = sigmod_func(data_mat[index]*w)
+            print('product',product)
+            err = abs(product-class_label[index])
+            err_sum += err
+        print('err_sum',err_sum)
+        if err_sum < error_upbound:
+            break
+        w = -learning_rate * w * err_sum + w
+        print('w', w,err_sum);
+    return w
+
+data_mat,data_class = load_dataset();
+weight_vec = gradientAscent(data_mat,data_class)
+print(weight_vec)
 
 
 
