@@ -219,7 +219,7 @@ def load_dataset():
     for line in file_open.readlines():
         line_data = line.strip().split('\t')
 
-        data_mat.append([1.0,float(line_data[0]),float(line_data[0])])
+        data_mat.append([1.0,float(line_data[0]),float(line_data[1])])
 
         label_mat.append([int(line_data[2])])
 
@@ -243,40 +243,93 @@ def sigmod_func(inX):
     class_label
         标签向量 需要转换成列向量 
 '''
-def gradientAscent(data_mat,class_label):
-    class_label_column = array(class_label).transpose();
-    data_mat = mat(data_mat)
-    class_label = mat(class_label)
+def gradientAscent(data_mat_in,class_label_in):
+    # class_label_column = array(class_label).transpose();
+    data_mat = mat(data_mat_in)
+    print('mat',mat(class_label_in))
+    class_label = mat(class_label_in).transpose()
+    print('cls',class_label)
     m = shape(data_mat)[0]; # m行 标识m个样本
     n = shape(data_mat[0])[1]; # n 列 标识n列 每个样本的特征数
 
-    max_cycle = 10;
-    learning_rate = 0.01;
-
-    error_upbound = 0.001;
-    error_iter = 100;
+    # print(shape(data_mat)) # 100*3
+    max_cycle = 5000;
+    learning_rate = 0.001;
 
     w1 = mat(array([1]*n));
-    w = w1.transpose();
+    w = w1.transpose(); # 3 *1
     # print(w)
 
     for i in range(max_cycle):
-        err_sum = 0.0
-        for index in range(m):
-            product = sigmod_func(data_mat[index]*w)
-            print('product',product)
-            err = abs(product-class_label[index])
-            err_sum += err
-        print('err_sum',err_sum)
-        if err_sum < error_upbound:
-            break
-        w = -learning_rate * w * err_sum + w
-        print('w', w,err_sum);
+
+        product = sigmod_func(data_mat*w)
+
+        err = (product-class_label[0]) # 100*1
+
+        w = w + learning_rate*data_mat.transpose()*err;
+
     return w
 
 data_mat,data_class = load_dataset();
+# print(data_mat)
+print(data_class)
 weight_vec = gradientAscent(data_mat,data_class)
-print(weight_vec)
+print('weight_vec2',weight_vec)
+print('weight_vec3')
+
+
+# '''
+#     weight 是矩阵来这
+# '''
+# def plot_best_fit(weight):
+#     import matplotlib.pyplot as plt
+#     weights_vector = weight.getA()
+#     print('weight_vec',weight_vec)
+#
+#     data_mat,label_mat = load_dataset();
+#     # print('label_mat_',label_mat)
+#
+#     data_arr = array(data_mat)
+#     # print('data_arr', data_arr)
+#
+#     n = shape(data_arr)[0]
+#
+#     # print("arr_t.......",data_arr[6][2])
+#     xcord1 = []; ycord1 = []
+#     xcord2 = []; ycord2 = []
+#
+#     for i in range(n):
+#         if (int(label_mat[i][0]))==1:
+#             xcord1.append(data_arr[i,1])
+#             ycord1.append(data_arr[i,2])
+#             # print('xcord1', xcord1, ycord1)
+#         else:
+#             xcord2.append(data_arr[i, 1])
+#             ycord2.append(data_arr[i, 2])
+#             # print('xcord2',xcord2,ycord2)
+#
+#     fig = plt.figure()
+#
+#     ax = fig.add_subplot(111)
+#
+#
+#
+#     ax.scatter(xcord1,ycord1,s=30,c='red',marker='s')
+#     ax.scatter(xcord2,ycord2,s=30,c='green')
+#
+#     x = arange(-3,3,0.1)
+#
+#     y = (-weights_vector[0]-weights_vector[1]*x)/weights_vector[2]
+#
+#     ax.plot(x,y)
+#
+#     plt.xlabel('X1')
+#     plt.ylabel('X2')
+#
+#     plt.show()
+#
+#
+# plot_best_fit(weight_vec)
 
 
 
