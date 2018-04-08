@@ -290,25 +290,25 @@ def gradAscent_2(data_mat_in,class_label):
     #
     # print('data_mat',data_mat);
     # print('label_mat',label_mat);
-    print('label_mat',shape(label_mat))
+    # print('label_mat',shape(label_mat))
     learning_rate = 0.1
     max_cycle = 10000
-    print('m,n',m,n)
-    print('data_mat_+shape',shape(data_mat))
+    # print('m,n',m,n)
+    # print('data_mat_+shape',shape(data_mat))
 
     weight = ones((n,1))
-    print('weight1',shape(weight))
+    # print('weight1',shape(weight))
 
     for i in range(max_cycle):
         product = data_mat * weight;
-        print('product',shape(product));
+        # print('product',shape(product));
         h =  sigmod_func(product)
-        print('h',shape(h))
+        # print('h',shape(h))
         err = label_mat - h
-        print('err',shape(err))
+        # print('err',shape(err))
         weight = weight + learning_rate*(data_mat.transpose())*err #3*1 + (1)*(3*100)*(100*1)
                 #关于weight的更新:1 err越大,走的越多; 2求导等于每一个特征的.
-    print('weight2',shape(weight))
+    # print('weight2',shape(weight))
     return weight
 
 
@@ -317,10 +317,10 @@ wei =  gradAscent_2( data_mat,data_class)
 '''
     weight 是矩阵来这
 '''
-def plot_best_fit(weight):
+def plot_best_fit(weights_vector):
     import matplotlib.pyplot as plt
-    weights_vector = weight.getA()
-    print('weight_vec',weights_vector)
+    # weights_vector = weight.getA()
+    # print('weight_vec',weights_vector)
 
     data_mat,label_mat = load_dataset();
     # print('label_mat_',label_mat)
@@ -361,9 +361,43 @@ def plot_best_fit(weight):
     plt.ylabel('X2')
 
     plt.show()
-plot_best_fit(wei)
+
+'''
+    梯度下降法在更新weight权重的时候都需要遍历整个数据集,处理小的数据量还可以,但是数据量有十亿或者千万级别,那么
+    计算的成本就会比较大;
+    而
+        '随机梯度上升的方法是一个在线的学习方法',一次处理完所有的数据的操作称为'批处理'patch
+'''
 
 
+'''
+    算法:
+        1.所有的回归系数都设置为1
+        2.对数据中的每一个样本
+            计算其样本梯度
+            使用alpha * gradient 更新回归系数
+        3.返回随机梯度上升系数
+'''
+
+def stoc_gradient_acent(data_mat_in,class_label_in):
+    m,n = shape(data_mat_in) # 100*3
+    weight = ones(n) # 3*1
+    alpha = 10
+    for i in range(m):
+         h = sigmod_func(sum(data_mat_in[i]*weight))
+         err = class_label_in[i] - h
+         weight = weight+alpha * err *data_mat_in[i]
+    return weight
+
+data_mat,data_class = load_dataset()
+# print ('da_',data_mat) #都是list 100*3
+# print ('da_class',data_class) #也是list 100 *1
+# print("da_!",mat(data_class))# 转换成矩阵了
+
+wei = stoc_gradient_acent(data_mat,data_class)
+print (wei)
+print (mat(wei).transpose)
+plot_best_fit((wei))
 
 
 
