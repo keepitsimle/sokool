@@ -271,7 +271,7 @@ def gradientAscent(data_mat,class_label):
         if err_sum < error_upbound:
             break
         w = -learning_rate * w * err_sum + w
-        print('w', w,err_sum);
+        print('w', w,err_sum)
     return w
 
 data_mat,data_class = load_dataset();
