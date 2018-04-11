@@ -74,3 +74,16 @@
 		不允许一个键出现两次,键是不可变的.
 
 11. append() 是在list列表中使用的函数.
+
+
+12. 关于python的mat函数和getA函数
+	
+	mat 将数组转化成矩阵
+	gatA 将矩阵转为数组	
+
+13. 关于numpy的matrix和array:
+		1 matrix必须是二维的,array可以是多维.matrix是array的一个分支,属于array,matrix拥有的属性array都有.
+		2 相比于array两个矩阵的乘积直接写成a*b 不用使用np.dot()
+
+	
+14. 字符串转为int 使用int('122')就好了

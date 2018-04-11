@@ -219,7 +219,7 @@ def load_dataset():
     for line in file_open.readlines():
         line_data = line.strip().split('\t')
 
-        data_mat.append([1.0,float(line_data[0]),float(line_data[0])])
+        data_mat.append([1.0,float(line_data[0]),float(line_data[1])])
 
         label_mat.append([int(line_data[2])])
 
@@ -243,23 +243,77 @@ def sigmod_func(inX):
     class_label
         标签向量 需要转换成列向量 
 '''
-def gradientAscent(data_mat,class_label):
-    class_label_column = array(class_label).transpose();
-    data_mat = mat(data_mat)
-    class_label = mat(class_label)
-    m = shape(data_mat)[0]; # m行 标识m个样本
-    n = shape(data_mat[0])[1]; # n 列 标识n列 每个样本的特征数
+# def gradientAscent(data_mat_in,class_label_in):
+#     # class_label_column = array(class_label).transpose();
+#     data_mat = mat(data_mat_in)
+#     print('mat',mat(class_label_in))
+#     class_label = mat(class_label_in).transpose()
+#     print('cls',type(class_label))
+#     print('cls',class_label)
+#     # m = shape(data_mat)[0]; # m行 标识m个样本
+#     # n = shape(data_mat[0])[1]; # n 列 标识n列 每个样本的特征数
+#
+#     m,n = shape(data_mat)
+#
+#     # print(shape(data_mat)) # 100*3
+#     max_cycle = 5000;
+#     learning_rate = 0.001;
+#     #
+#     # w1 = mat(array([1]*n));
+#     # w = w1.transpose(); # 3 *1
+#     # # print(w)
+#     w = ones((n,1))
+#
+#     for i in range(max_cycle):
+#
+#         product = sigmod_func(data_mat*w)
+#
+#         err = (class_label-product) # 100*1
+#
+#         w = w + learning_rate*data_mat.transpose()*err;
+#
+#     return w
+#
+data_mat,data_class = load_dataset();
+# print(data_mat)
+# print(data_class)
+# weight_vec = gradientAscent(data_mat,data_class)
+# print('weight_vec2',weight_vec)
+# print('weight_vec3')
 
-    max_cycle = 10;
-    learning_rate = 0.01;
+def gradAscent_2(data_mat_in,class_label):
+    data_mat = mat(data_mat_in)
 
-    error_upbound = 0.001;
-    error_iter = 100;
+    m,n = shape(data_mat)
 
-    w1 = mat(array([1]*n));
-    w = w1.transpose();
-    # print(w)
+    label_mat = mat(class_label)
+    #
+    # print('data_mat',data_mat);
+    # print('label_mat',label_mat);
+    # print('label_mat',shape(label_mat))
+    learning_rate = 0.1
+    max_cycle = 10000
+    # print('m,n',m,n)
+    # print('data_mat_+shape',shape(data_mat))
 
+    weight = ones((n,1))
+    # print('weight1',shape(weight))
+
+    for i in range(max_cycle):
+        product = data_mat * weight;
+        # print('product',shape(product));
+        h =  sigmod_func(product)
+        # print('h',shape(h))
+        err = label_mat - h
+        # print('err',shape(err))
+        weight = weight + learning_rate*(data_mat.transpose())*err #3*1 + (1)*(3*100)*(100*1)
+                #关于weight的更新:1 err越大,走的越多; 2求导等于每一个特征的.
+    # print('weight2',shape(weight))
+    return weight
+
+
+
+<<<<<<< HEAD
     for i in range(max_cycle):
         err_sum = 0.0
         for index in range(m):
@@ -273,12 +327,93 @@ def gradientAscent(data_mat,class_label):
         w = -learning_rate * w * err_sum + w
         print('w', w,err_sum)
     return w
+=======
+wei =  gradAscent_2( data_mat,data_class)
+'''
+    weight 是矩阵来这
+'''
+def plot_best_fit(weights_vector):
+    import matplotlib.pyplot as plt
+    # weights_vector = weight.getA()
+    # print('weight_vec',weights_vector)
+>>>>>>> 0701d6016f82097591651ec7133454cf3466da38
 
-data_mat,data_class = load_dataset();
-weight_vec = gradientAscent(data_mat,data_class)
-print(weight_vec)
+    data_mat,label_mat = load_dataset();
+    # print('label_mat_',label_mat)
+
+    data_arr = array(data_mat)
+    # print('data_arr', data_arr)
+
+    n = shape(data_arr)[0]
+
+    # print("arr_t.......",data_arr[6][2])
+    xcord1 = []; ycord1 = []
+    xcord2 = []; ycord2 = []
+
+    for i in range(n):
+        if (int(label_mat[i][0]))==1:
+            xcord1.append(data_arr[i,1])
+            ycord1.append(data_arr[i,2])
+            # print('xcord1', xcord1, ycord1)
+        else:
+            xcord2.append(data_arr[i, 1])
+            ycord2.append(data_arr[i, 2])
+            # print('xcord2',xcord2,ycord2)
+
+    fig = plt.figure()
+
+    ax = fig.add_subplot(111)
+
+    ax.scatter(xcord1,ycord1,s=30,c='red',marker='s')
+    ax.scatter(xcord2,ycord2,s=30,c='green')
+
+    x = arange(-3,3,0.1)
+
+    y = (-weights_vector[0]-weights_vector[1]*x)/weights_vector[2]
+
+    ax.plot(x,y)
+
+    plt.xlabel('X1')
+    plt.ylabel('X2')
+
+    plt.show()
+
+'''
+    梯度下降法在更新weight权重的时候都需要遍历整个数据集,处理小的数据量还可以,但是数据量有十亿或者千万级别,那么
+    计算的成本就会比较大;
+    而
+        '随机梯度上升的方法是一个在线的学习方法',一次处理完所有的数据的操作称为'批处理'patch
+'''
 
 
+'''
+    算法:
+        1.所有的回归系数都设置为1
+        2.对数据中的每一个样本
+            计算其样本梯度
+            使用alpha * gradient 更新回归系数
+        3.返回随机梯度上升系数
+'''
+
+def stoc_gradient_acent(data_mat_in,class_label_in):
+    m,n = shape(data_mat_in) # 100*3
+    weight = ones(n) # 3*1
+    alpha = 10
+    for i in range(m):
+         h = sigmod_func(sum(data_mat_in[i]*weight))
+         err = class_label_in[i] - h
+         weight = weight+alpha * err *data_mat_in[i]
+    return weight
+
+data_mat,data_class = load_dataset()
+# print ('da_',data_mat) #都是list 100*3
+# print ('da_class',data_class) #也是list 100 *1
+# print("da_!",mat(data_class))# 转换成矩阵了
+
+wei = stoc_gradient_acent(data_mat,data_class)
+print (wei)
+print (mat(wei).transpose)
+plot_best_fit((wei))
 
 
 
