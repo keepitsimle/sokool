@@ -120,14 +120,150 @@ plt.show()
 '''
 
 #https://www.zhihu.com/topic/19587715/top-answers
-img = cv2.imread('0.jpg')
+# img = cv2.imread('0.jpg')
+# print(img)
+#
+# M_crop_light = np.array(
+#     [
+#         [0.5,0,-50],
+#         [0,0.5,-100],
+#     ],
+#     dtype=np.float32)
+#
+# '''
+# x轴剪切变换,y轴剪切15度
+# '''
+# theta = 15*np.pi/180
+# M_sher = np.array(
+#     [
+#         [1,np.tan(theta),0],
+#         [np.tan(theta),1,0]
+#     ],dtype=np.float32
+# )
+#
+#
+#
+# img_light = cv2.warpAffine(img,M_crop_light,(250,375))
+# cv2.imwrite('img_light.jpg',img_light)
+#
+#
+# img_light = cv2.warpAffine(img,M_sher,(500,750))
+# cv2.imwrite('img_light_sheared.jpg',img_light)
 
-M_crop_light = np.array(
+
+
+# import numpy as np
+# import cv2
+# # BGR 三个分量分别是B G R
+# img = np.zeros((512,512,3),np.uint8)
+#
+# cv2.line(img,(0,0),(511,511),(255,0,0),2)
+#
+# cv2.rectangle(img,(300,0),(450,450),(0,255,0),1)
+#
+# cv2.circle(img,(400,400),50,(0,0,127),2)
+#
+# cv2.ellipse(img,(200,200),(20,30),0,0,270,(0,127,0))
+#
+# pts = np.array([[10,5],[20,30],[70,20],[50,10]],np.int32)
+# pts = pts.reshape((-1,1,2))
+# cv2.polylines(img,[pts],True,(0,255,0))
+#
+#
+# font = cv2.FONT_HERSHEY_PLAIN
+# cv2.putText(img,'sokool',(10,500),font,4,(12,34,45))
+#
+# cv2.imshow('image',img)
+# cv2.waitKey(0)
+
+
+'''
+    将鼠标当画笔
+'''
+
+# import cv2
+# events = [i for i in dir(cv2) if 'EVENT' in i] # 打印所有的鼠标/键盘事件
+# print(events)
+'''
+['EVENT_FLAG_ALTKEY', 'EVENT_FLAG_CTRLKEY', 'EVENT_FLAG_LBUTTON', 'EVENT_FLAG_MBUTTON', 'EVENT_FLAG_RBUTTON',
+ 'EVENT_FLAG_SHIFTKEY', 'EVENT_LBUTTONDBLCLK', 'EVENT_LBUTTONDOWN', 'EVENT_LBUTTONUP', 'EVENT_MBUTTONDBLCLK', 
+ 'EVENT_MBUTTONDOWN', 'EVENT_MBUTTONUP', 'EVENT_MOUSEHWHEEL', 
+'EVENT_MOUSEMOVE', 'EVENT_MOUSEWHEEL', 'EVENT_RBUTTONDBLCLK', 'EVENT_RBUTTONDOWN', 'EVENT_RBUTTONUP']
+
+img = np.zeros((512,512,3),np.uint8)
+font = cv2.FONT_HERSHEY_PLAIN
+def draw_logo(events,x,y,flags,param):
+    if events==cv2.EVENT_LBUTTONDBLCLK:
+        cv2.putText(img,'sokool',(100,100),font,2,(100,255,34));
+
+cv2.namedWindow('image')
+cv2.setMouseCallback('image',draw_logo)
+
+while(1):
+    cv2.imshow('image',img)
+    if cv2.waitKey(20)&0xFF == 27:
+        break
+cv2.destroyAllWindows()
+
+'''
+
+
+'''
+ 图像的加法:
+
+img_0 = cv2.imread('0.jpg')
+
+cut_M = np.array(
     [
-        [0.5,0,-50],
-        [0,0.5,-100],
+        [1,0,0],
+        [0,1,-250]
     ],
-    dtype=np.float32)
+    dtype=np.float,
+)
+cut_img_0 = cv2.warpAffine(img_0,cut_M,(500,500))
+# cv2.imshow('image',cut_img_0)
+# cv2.waitKey(0)
+cv2.imwrite('0.jpg',cut_img_0)
+img_1 = cv2.imread('1.jpg')
 
-img_light = cv2.warpAffine(img,M_crop_light,(250,375))
-cv2.imwrite('img_light.jpg',img_light)
+i_0_1 = cv2.addWeighted(cut_img_0,0.5,img_1,0.5,0)
+
+cv2.imshow('image',i_0_1)
+cv2.waitKey(0)
+# print(cut_img_0.shape,img_1.shape)
+
+    
+'''
+
+
+'''
+    将1.jpg 缩小为原来的1/4,加入遮挡住0.jpg
+'''
+
+opencv_1_4_M = np.array(
+    [
+        [0.5,0,-250],
+        [0,0.5,-250],
+    ],dtype=np.float
+)
+
+opencv_1_4 = cv2.warpAffine('1.jpg',opencv_1_4_M,(250,250));
+cv2.imwrite('opencv_logo.jpg',opencv_1_4);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
