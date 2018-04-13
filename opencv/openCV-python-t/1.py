@@ -238,31 +238,63 @@ cv2.waitKey(0)
 
 '''
     将1.jpg 缩小为原来的1/4,加入遮挡住0.jpg
-'''
+
 
 opencv_1_4_M = np.array(
     [
-        [0.5,0,-250],
-        [0,0.5,-250],
+        [0.5,0,0],
+        [0,0.5,0],
     ],dtype=np.float
 )
 
-opencv_1_4 = cv2.warpAffine('1.jpg',opencv_1_4_M,(250,250));
+logo = cv2.imread('1.jpg',0)
+opencv_1_4 = cv2.warpAffine(logo,opencv_1_4_M,(250,250));
 cv2.imwrite('opencv_logo.jpg',opencv_1_4);
 
+'''
+'''
+img = np.ones((500,500),np.uint8)
+
+# img = cv2.imread(img_arr,0)
+# cv2.imshow('1',img)
+# print(logo.shape)
+print(opencv_1_4.shape)
+
+# cv2.imshow('img',opencv_1_4)
+
+# red = logo[145:340+50+4,0:195+50+4]
+
+img[0:250,0:250] = opencv_1_4
+img[250:500,0:250] = opencv_1_4
+img[0:250,250:500] = opencv_1_4
+img[250:500,250:500] = opencv_1_4
+
+cv2.imshow('1',img)
+cv2.waitKey(0)
+
+'''
 
 
+'''
+    利用HSV跟踪提取颜色
+        提取蓝色的图案
+'''
 
+img = cv2.imread('1.jpg')
+print(img)
+img_hsv = cv2.cvtColor(img,cv2.COLOR_BGR2HLS)
 
+lower_blue = np.array([110,50,50])
+upper_blue = np.array([130,255,255])
 
+mask = cv2.inRange(img_hsv,lower_blue,upper_blue)
+mask_not = cv2.bitwise_not(mask) # blue 的取反操作
+output = cv2.bitwise_and(img,img,mask=mask_not)
 
+cv2.imshow('mask',mask)
+cv2.imshow('output',output)
 
-
-
-
-
-
-
+cv2.waitKey(0)
 
 
 
