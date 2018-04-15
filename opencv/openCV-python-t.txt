@@ -57,4 +57,16 @@ opencv:
 		白色的为1 黑色的为0
 
 
-
+	5.图像阈值:图像像素高于阈值,赋予一个值,反之可以赋予其他值.
+		https://blog.csdn.net/keith_bb/article/details/54617625
+		https://blog.csdn.net/qq_34510308/article/details/64556590
+		简单阈值:
+			全局阈值,将图像分割成非黑即白的二值图像 函数cv2.threshold()
+				cv2.THRESH_BINARY (黑白)
+				cv2.THRESH__BINARY_INV (黑白二值反转)
+				cv2.THRESH__TRUNC (截断阈值化)
+				cv2.THRESH__TOZERO (阈值化为0)
+				cv2.THRESH__TOZERO_INV (反阈值化为0)
+		自适应阈值:
+			局部阈值,选定特定的大小,用像素点与特定大小像素点的平均值(或者其他特征)比较,来确定该点是黑还是白
+		Otsu's二值化

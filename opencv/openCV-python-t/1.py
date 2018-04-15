@@ -278,7 +278,7 @@ cv2.waitKey(0)
 '''
     利用HSV跟踪提取颜色
         提取蓝色的图案
-'''
+
 
 img = cv2.imread('1.jpg')
 print(img)
@@ -296,6 +296,111 @@ cv2.imshow('output',output)
 
 cv2.waitKey(0)
 
+'''
 
 
+'''
+    图像的透视变换
+    就像放大缩小图像一样;
+    
 
+img = cv2.imread('1.jpg')
+rows,cols,ch = img.shape
+
+pts1 = np.float32([[39,185],[39,375],[233,185],[233,375]])
+
+pts2 = np.float32([[0,0],[500,0],[0,500],[500,500]])
+
+M = cv2.getPerspectiveTransform(pts1,pts2)
+
+dst = cv2.warpPerspective(img,M,(500,500))
+
+
+cv2.imshow('1',dst)
+cv2.waitKey(0)
+
+'''
+'''
+    简单阈值
+
+img = cv2.imread('1.jpg',0)
+ret,threashold1= cv2.threshold(img,127,255,cv2.THRESH_BINARY);
+ret,threashold2= cv2.threshold(img,127,255,cv2.THRESH_BINARY_INV);
+ret,threashold3= cv2.threshold(img,127,255,cv2.THRESH_TRUNC);
+ret,threashold4= cv2.threshold(img,127,255,cv2.THRESH_TOZERO);
+ret,threashold5= cv2.threshold(img,127,255,cv2.THRESH_TOZERO_INV);
+
+
+titles = ['original','binary','binary_inv','trunc','tozero','tozero_inv']
+images = [img,threashold1,threashold2,threashold3,threashold4,threashold5]
+
+for i in range(6):
+    plt.subplot(2,3,i+1)
+    plt.imshow(images[i],'gray')
+    plt.title(titles[i])
+
+plt.show();
+
+'''
+
+
+'''
+    自适应阈值
+
+
+img = cv2.imread('1.jpg',0)
+
+img = cv2.medianBlur(img,5)
+
+ret,th1 = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
+
+th2= cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_MEAN_C,cv2.THRESH_BINARY,11,2)
+th3= cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,11,2)
+
+titles = ['Original Image', 'Global Thresholding (v = 127)',
+'Adaptive Mean Thresholding', 'Adaptive Gaussian Thresholding']
+images = [img, th1, th2, th3]
+for i in range(4):
+    plt.subplot(2,2,i+1),plt.imshow(images[i],'gray')
+    plt.title(titles[i])
+    plt.xticks([]),plt.yticks([])
+plt.show()
+
+'''
+
+
+'''
+    Otus's 二值化
+img = cv2.imread('1.jpg',0)
+# global thresholding
+ret1,th1 = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
+# Otsu's thresholding
+ret2,th2 = cv2.threshold(img,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+# Otsu's thresholding after Gaussian filtering
+#（5,5）为高斯核的大小，0 为标准差
+blur = cv2.GaussianBlur(img,(5,5),0)
+# 阈值一定要设为0！
+ret3,th3 = cv2.threshold(blur,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+# plot all the images and their histograms
+images = [img, 0, th1,img, 0, th2,blur, 0, th3]
+titles = ['Original Noisy Image','Histogram','Global Thresholding (v=127)',
+'Original Noisy Image','Histogram',"Otsu's Thresholding",
+'Gaussian filtered Image','Histogram',"Otsu's Thresholding"]
+# 这里使用了pyplot 中画直方图的方法，plt.hist, 要注意的是它的参数是一维数组
+# 所以这里使用了（numpy）ravel 方法，将多维数组转换成一维，也可以使用flatten 方法
+#ndarray.flat 1-D iterator over an array.
+#ndarray.flatten 1-D array copy of the elements of an array in row-major order.
+for i in range(3):
+    plt.subplot(3,3,i*3+1),plt.imshow(images[i*3],'gray')
+    plt.title(titles[i*3]), plt.xticks([]), plt.yticks([])
+    plt.subplot(3,3,i*3+2),plt.hist(images[i*3].ravel(),256)
+    plt.title(titles[i*3+1]), plt.xticks([]), plt.yticks([])
+    plt.subplot(3,3,i*3+3),plt.imshow(images[i*3+2],'gray')
+    plt.title(titles[i*3+2]), plt.xticks([]), plt.yticks([])
+plt.show()
+'''
+
+'''
+    图像平滑
+    https://docs.gimp.org/en/plug-in-convmatrix.html
+'''
