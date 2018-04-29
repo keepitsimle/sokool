@@ -4,7 +4,7 @@ opencv:
 			每个像素点对应像素点矩阵的强度值;值越大表示越亮
 
 		w.通道:每个像素点由几个颜色合成
-			RGB     三通道 图像由三个Red Green Black颜色合成
+			RGB     三通道 图像由三个Red Green Blue颜色合成
 			单通道  只用1bit表示 0为黑色
 			四通道	在RGB上加入alpha通道,表示透明度,alpha = 0 全透明
 
@@ -52,5 +52,21 @@ opencv:
 				0.5	0
 				0	0.5  图像变成原来的1/4. opencv 从左上开始计算;
 
+	4.图像的位操作:
+		关于使用mask的操作,制作PCB的蚀刻类似,mask阻挡住了图像的蚀刻
+		白色的为1 黑色的为0
 
 
+	5.图像阈值:图像像素高于阈值,赋予一个值,反之可以赋予其他值.
+		https://blog.csdn.net/keith_bb/article/details/54617625
+		https://blog.csdn.net/qq_34510308/article/details/64556590
+		简单阈值:
+			全局阈值,将图像分割成非黑即白的二值图像 函数cv2.threshold()
+				cv2.THRESH_BINARY (黑白)
+				cv2.THRESH__BINARY_INV (黑白二值反转)
+				cv2.THRESH__TRUNC (截断阈值化)
+				cv2.THRESH__TOZERO (阈值化为0)
+				cv2.THRESH__TOZERO_INV (反阈值化为0)
+		自适应阈值:
+			局部阈值,选定特定的大小,用像素点与特定大小像素点的平均值(或者其他特征)比较,来确定该点是黑还是白
+		Otsu's二值化
