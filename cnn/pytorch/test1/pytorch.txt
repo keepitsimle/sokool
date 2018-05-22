@@ -1,0 +1,5 @@
+关于Pytroch的自动求梯度的算法
+	如果构建一个Tensor使用了requires_grad = True 那该Tensor所有的计算都将被跟踪,就像被安装了一个gps.
+
+	每一个变量都有一个.grad_fn属性 这个属性指向了一个创建函数的函数.
+	Each variable has a .grad_fn attribute that references a function that has created a function.
