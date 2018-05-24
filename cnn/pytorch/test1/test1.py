@@ -257,14 +257,14 @@ import numpy   as np
 # print(torch2array)
 
 import torch
-from torch.autograd import Variable
+# from torch.autograd import Variable
 
-tensor = torch.ones(2,3,requires_grad=True)
-
-tensor1 = torch.ones(2,3,requires_grad= True)
-
-
-y = torch.(tensor,tensor1)
+# tensor = torch.ones(2,3,requires_grad=True)
+#
+# tensor1 = torch.ones(2,3,requires_grad= True)
+#
+#
+# y = torch.add(tensor,tensor1)
 
 
 
@@ -274,9 +274,9 @@ y = torch.(tensor,tensor1)
 
 
 #t_out.backwrad()  # 只有variable 才有backward()
-print(tensor.grad)
-print(y.grad_fn)
-print()
+# print(tensor.grad)
+# print(y.grad_fn)
+# print()
 
 # print(
 #     "\ntensor",tensor,
@@ -285,3 +285,122 @@ print()
 #     "\nt_out",t_out,
 #     "\nv_out",v_out,
 # )
+
+# a = torch.randn(2,2)
+# a = ((a*3)/(a-1))
+# print(a.requires_grad)
+# a.requires_grad_(True)
+#
+# print(a.requires_grad)
+#
+# b = (a*a).sum()
+# print(b.grad_fn)
+
+'''
+x = torch.ones(2,2,requires_grad= True)
+
+y = x+2
+
+z = y*y*3
+out = z.mean()
+print('x.grad_fn',x.grad_fn)  # x 没有x.grad_fn
+print('y.grad_fn',y.grad_fn)  # x 有 requires_grad  接着 x的一套都有grad_fn
+print('z.grad_fn',z.grad_fn)
+print('out.grad_fn',out.grad_fn)
+
+print(z,out)
+
+out.backward() #
+print(x.grad)
+print(y.gard) #为什么y没有grad
+'''
+
+import matplotlib.pyplot as plt
+import torch.nn.functional as F
+
+
+# x = torch.linspace(-5,5,200)
+#
+# x_np = x.data.numpy()
+#
+# print(x,x_np)
+#
+# y_rule = F.relu(x).data.numpy()
+#
+# y_sigmoid = F.sigmoid(x).data.numpy()
+#
+# y_tanh = F.tanh(x).data.numpy()
+#
+# y_softplus = F.softplus(x).data.numpy()
+
+'''
+plt.figure(1,figsize=(8,6))
+plt.subplot(221)
+plt.plot(x_np,y_rule,c='red',label='relu')
+plt.ylim(-1,50)
+plt.legend(loc='relu')
+
+plt.subplot(222)
+plt.plot(x_np,y_sigmoid,c='red',label='sigmoid')
+plt.ylim(-1,1)
+plt.legend(loc='sigmoid')
+
+plt.subplot(223)
+plt.plot(x_np,y_tanh,c='blue',label='tanh')
+plt.ylim(-1,2)
+plt.legend(loc='tanh')
+
+
+plt.subplot(224)
+plt.plot(x_np,y_softplus,c='green',label='softplus')
+plt.ylim(-1,5)
+plt.legend(loc='softplus')
+
+plt.show()
+'''
+
+t = torch.unsqueeze(torch.linspace(-1,1,10),dim=1) # t shape = (100,1)
+y = t.pow(4) + .01 *torch.rand(t.size())
+print(t,'\n',y,'\n',t.pow(2))
+
+# plt.scatter(t.data.numpy(),y.data.numpy())
+# plt.show()
+
+class Net(torch.nn.Module):
+    def __init__(self,in_feature,hidden,out_feature):
+        super(Net,self).__init__()
+        self.hidden = torch.nn.Linear(in_feature,hidden)
+        self.out = torch.nn.Linear(hidden,out_feature)
+    def forward(self,x):
+        x = F.relu(self.hidden(x))
+        x = self.out(x)
+        return x
+
+net = Net(1,10,1)
+print(net)
+
+plt.ion()
+plt.show()
+
+optimizer = torch.optim.SGD(net.parameters(),lr=0.5)
+loss_func = torch.nn.MSELoss()
+
+for i in range(1000):
+    predictor = net(t)
+
+    loss = loss_func(predictor,y)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    if i%5==0:
+        plt.cla()
+        plt.scatter(t.data.numpy(),y.data.numpy())
+        plt.plot(t.data.numpy(),predictor.data.numpy(),'r-',lw=5)
+        plt.text(0.5,0,'loss=%4f'%loss.data[0],fontdict={'size':20,'color':'red'})
+        plt.pause(0.3)
+plt.ioff()
+plt.show()
+
+
+
