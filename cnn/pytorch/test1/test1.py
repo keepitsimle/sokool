@@ -380,7 +380,7 @@ net = Net(1,10,1)
 print(net)
 
 plt.ion()
-plt.show()
+# plt.show()
 
 optimizer = torch.optim.SGD(net.parameters(),lr=0.5)
 loss_func = torch.nn.MSELoss()
