@@ -1,6 +1,6 @@
 
-from __future__ import print_function
-import torch
+# from __future__ import print_function
+# import torch
 
 # x= torch.empty(5,3) # Tensors 与 numpy 的数组类似 可以使用gpu进行加速
 # print(x)
@@ -358,7 +358,7 @@ plt.legend(loc='softplus')
 
 plt.show()
 '''
-
+'''
 t = torch.unsqueeze(torch.linspace(-1,1,10),dim=1) # t shape = (100,1)
 y = t.pow(4) + .01 *torch.rand(t.size())
 print(t,'\n',y,'\n',t.pow(2))
@@ -401,6 +401,122 @@ for i in range(1000):
         plt.pause(0.3)
 plt.ioff()
 plt.show()
+'''
+
+'''
+import torch
+from torch.autograd import Variable
+import matplotlib.pyplot as plt
+
+x = torch.unsqueeze(torch.linspace(-1,1,100),dim=1)
+y = x.pow(2) + 0.3*torch.rand(x.size())
+
+x,y = Variable(x,requires_grad=False), Variable(y,requires_grad=False)
+
+def save():
+    net1 = torch.nn.Sequential(
+        torch.nn.Linear(1,10),
+        torch.nn.ReLU(),
+        torch.nn.Linear(10,1)
+    )
+
+    optimizer = torch.optim.SGD(net1.parameters(),lr=0.3)
+    lossFunc = torch.nn.MSELoss()
+
+    for  t in range(100):
+        pre = net1(x)
+        loss = lossFunc(pre,y)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+    plt.figure(1,figsize=(10,3))
+    plt.subplot(131)
+    plt.scatter(x.data.numpy(),y.data.numpy())
+    plt.plot(x.data.numpy(),pre.data.numpy(),'r-',lw=5)
+
+    torch.save(net1,'net.pkl')
+    torch.save(net1.state_dict(),'net_params.pkl')
+
+def restore_net():
+    net2 = torch.load('net.pkl')
+    pre = net2(x)
+
+    plt.subplot(132)
+    plt.scatter(x.data.numpy(), y.data.numpy())
+    plt.plot(x.data.numpy(), pre.data.numpy(), 'r-', lw=5)
+
+def restore_params():
+    net3 = net1 = torch.nn.Sequential(
+        torch.nn.Linear(1,10),
+        torch.nn.ReLU(),
+        torch.nn.Linear(10,1)
+    )
+
+    net3.load_state_dict(torch.load('net_params.pkl'))
+    pre = net3(x)
+
+    plt.subplot(133)
+    plt.title('Net3')
+    plt.scatter(x.data.numpy(), y.data.numpy())
+    plt.plot(x.data.numpy(), pre.data.numpy(), 'r-', lw=5)
+    plt.show()
+
+save()
+
+restore_net()
+
+restore_params()
+
+'''
 
 
 
+# import torch
+# import torch.utils.data as Data
+#
+#
+# BATCH_SIZE = 5
+#
+# x = torch.linspace(1,10,10)
+# y = torch.linspace(10,1,10)
+#
+# torch_dataset = Data.TensorDataset(x,
+#                                   y)
+#
+# loader = Data.DataLoader(
+#     dataset=torch_dataset,
+#     batch_size= BATCH_SIZE,
+#     shuffle=False,
+#     num_workers=2,
+# )
+#
+# for epoch in range(3):
+#     for step,(batch_x,batch_y) in enumerate(loader):
+#         print('epoch',epoch,'step',step,'batch_x',batch_x.numpy(),'batch_y',batch_y.numpy())
+
+
+import torch
+import torch.utils.data as Data
+
+torch.manual_seed(1)    # reproducible
+
+BATCH_SIZE = 5
+# BATCH_SIZE = 8
+
+x = torch.linspace(1, 10, 10)       # this is x data (torch tensor)
+y = torch.linspace(10, 1, 10)       # this is y data (torch tensor)
+
+torch_dataset = Data.TensorDataset(x, y)
+loader = Data.DataLoader(
+    dataset=torch_dataset,      # torch TensorDataset format
+    batch_size=BATCH_SIZE,      # mini batch size
+    shuffle=True,               # random shuffle for training
+    num_workers=2,              # subprocesses for loading data
+)
+
+for epoch in range(3):   # train entire dataset 3 times
+    for step, (batch_x, batch_y) in enumerate(loader):  # for each training step
+        # train your data...
+        print('Epoch: ', epoch, '| Step: ', step, '| batch x: ',
+              batch_x.numpy(), '| batch y: ', batch_y.numpy())
