@@ -86,7 +86,7 @@
 # y.backward(gradients)
 # print(x.grad)
 
-import numpy   as np
+# import numpy   as np
 # a = np.ones(5)
 # b = torch.from_numpy(a)
 # np.add(a,1,out=a)
@@ -256,7 +256,7 @@ import numpy   as np
 # print(torch_data)
 # print(torch2array)
 
-import torch
+# import torch
 # from torch.autograd import Variable
 
 # tensor = torch.ones(2,3,requires_grad=True)
@@ -315,8 +315,8 @@ print(x.grad)
 print(y.gard) #为什么y没有grad
 '''
 
-import matplotlib.pyplot as plt
-import torch.nn.functional as F
+# import matplotlib.pyplot as plt
+# import torch.nn.functional as F
 
 
 # x = torch.linspace(-5,5,200)
@@ -495,28 +495,110 @@ restore_params()
 #     for step,(batch_x,batch_y) in enumerate(loader):
 #         print('epoch',epoch,'step',step,'batch_x',batch_x.numpy(),'batch_y',batch_y.numpy())
 
+#
+# import torch
+# import torch.utils.data as Data
+#
+# torch.manual_seed(1)    # reproducible
+#
+# BATCH_SIZE = 5
+#
+# x = torch.linspace(1, 10, 10)       # this is x data (torch tensor)
+# y = torch.linspace(10, 1, 10)       # this is y data (torch tensor)
+#
+# torch_dataset = Data.TensorDataset(x, y)
+# loader = Data.DataLoader(
+#     dataset=torch_dataset,      # torch TensorDataset format
+#     batch_size=BATCH_SIZE,      # mini batch size
+#     shuffle=True,               # random shuffle for training
+#     num_workers=1,              # subprocesses for loading data
+# )
+#
+# for epoch in range(3):   # train entire dataset 3 times
+#     for step, (batch_x, batch_y) in enumerate(loader):  # for each training step
+#         # train your data...
+#         print('Epoch: ', epoch, '| Step: ', step, '| batch x: ',
+#               batch_x.numpy(), '| batch y: ', batch_y.numpy())
+
 
 import torch
 import torch.utils.data as Data
+import torch.nn.functional as F
+import matplotlib.pyplot as plt
 
-torch.manual_seed(1)    # reproducible
+LR = 0.01
+BATCH_SIZE = 10
+EPOCH = 20
 
-BATCH_SIZE = 5
-# BATCH_SIZE = 8
+x = torch.unsqueeze(torch.linspace(-1,1,100),dim=1)
+y  = x.pow(2) + 0.1*torch.normal(torch.zeros(x.size()))
 
-x = torch.linspace(1, 10, 10)       # this is x data (torch tensor)
-y = torch.linspace(10, 1, 10)       # this is y data (torch tensor)
 
-torch_dataset = Data.TensorDataset(x, y)
+# plt.plot(x.numpy(),y.numpy())
+# plt.show()
+
+
+torch_data = Data.TensorDataset(x,y)
+
 loader = Data.DataLoader(
-    dataset=torch_dataset,      # torch TensorDataset format
-    batch_size=BATCH_SIZE,      # mini batch size
-    shuffle=True,               # random shuffle for training
-    num_workers=2,              # subprocesses for loading data
+    dataset = torch_data,
+    batch_size=BATCH_SIZE,
+    shuffle= True,
+    num_workers= 2,
 )
 
-for epoch in range(3):   # train entire dataset 3 times
-    for step, (batch_x, batch_y) in enumerate(loader):  # for each training step
-        # train your data...
-        print('Epoch: ', epoch, '| Step: ', step, '| batch x: ',
-              batch_x.numpy(), '| batch y: ', batch_y.numpy())
+
+class nNet(torch.nn.Module):
+    def __init__(self):
+        super(nNet,self).__init__()
+        self.hidden = torch.nn.Linear(1,200) #这是一个对象来自 完全构造的一个对象
+        self.pre = torch.nn.Linear(200,1)
+    def forward(self, x):
+        x = F.relu(self.hidden(x))
+        x = self.pre(x)
+        return x
+
+if __name__ == '__main__':
+    net_sgd = nNet()
+    net_momemtum = nNet()
+    net_adagrad = nNet()
+    net_adam = nNet()
+
+
+    net_ed = [net_sgd,net_momemtum,net_adagrad,net_adam]
+
+    optimizer_sgd = torch.optim.SGD(net_sgd.parameters(),lr=LR)
+    optimizer_Momentum = torch.optim.SGD(net_momemtum.parameters(),lr=LR,momentum=0.8)
+    optimizer_adagrad = torch.optim.Adagrad(net_adagrad.parameters(),lr=LR)
+    optimizer_adam = torch.optim.Adam(net_adam.parameters(),lr=LR,betas=(0.9,0.99))
+
+
+    optimizer_ed = [optimizer_sgd,optimizer_Momentum,optimizer_adagrad,optimizer_adam]
+
+    losses_history  = [[],[],[],[]]
+
+    loss_func = torch.nn.MSELoss()
+
+    for i in range(EPOCH):
+        print('epoch:',i)
+        for step,(bx,by) in enumerate(loader): #每一个epoch将一组数据全部遍历完成
+            for net,optimizer,l_his in zip(net_ed,optimizer_ed,losses_history):
+                out  = net(bx)
+                loss = loss_func(out,by)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+                l_his.append(loss.data.numpy())
+
+    print(losses_history[0].__len__())
+    labels = ['sgd','momentun','adgrad','adam']
+    print('loss_history',losses_history)
+    for i,l_his in enumerate(losses_history):
+        plt.plot(l_his,label = labels[i])
+    plt.legend(loc='best')
+    plt.xlabel('Steps')
+    plt.ylabel('Loss')
+    plt.ylim(0,0.2)
+    plt.show()
+
+
