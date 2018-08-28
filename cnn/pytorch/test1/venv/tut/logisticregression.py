@@ -4,6 +4,7 @@ This example is using the MNIST database of handwritten digits
 (http://yann.lecun.com/exdb/mnist/)
 Author: Aymeric Damien
 Project: https://github.com/aymericdamien/TensorFlow-Examples/
+'''
 
 
 from __future__ import print_function
@@ -36,7 +37,7 @@ b = tf.Variable(tf.zeros([10]))
 
 pred = tf.nn.softmax(tf.matmul(x, W) + b) # Softmax (10,10) + (10,1)
 
-# Minimize error using cross entropy
+# Minimize error using cross entropy # why use the cross entropy Not minSquare
 cost = tf.reduce_mean(-tf.reduce_sum(y*tf.log(pred)))
 # Gradient Descent
 optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
@@ -74,13 +75,12 @@ with tf.Session() as sess:
     # Calculate accuracy
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
     print("Accuracy:", accuracy.eval({x: mnist.test.images, y: mnist.test.labels}))
-'''
 
 
-import tensorflow as tf
-
-a = tf.constant(1,shape=[4,2])
-b = tf.constant(2,shape=[2])
-c = a+b
-with tf.Session() as sess:
-    print(sess.run([a,b,c]))
+# import tensorflow as tf
+#
+# a = tf.constant(1,shape=[4,2])
+# b = tf.constant(2,shape=[2])
+# c = a+b
+# with tf.Session() as sess:
+#     print(sess.run([a,b,c]))
